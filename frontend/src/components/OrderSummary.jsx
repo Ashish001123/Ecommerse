@@ -7,10 +7,7 @@ import axiosInstance from "../config/axios.js";
 
 
 
-// const stripePromise = loadStripe(
-// 	   "pk_test_51SFtkzDvAKZUqJVtdv6qS9AsRXDL0DtyW4I1fN4vIO6H6RdkIbILkaHqwrFl49Ws5Xf5DXNa6QyR89NitoN94evS00iA9YvPdP"
-	
-// );
+
 
 const OrderSummary = () => {
   const { total, subtotal, coupon, isCouponApplied, cart } = useCartStore();
@@ -20,23 +17,7 @@ const OrderSummary = () => {
   const formattedTotal = total.toFixed(2);
   const formattedSavings = savings.toFixed(2);
 
-//   const handlePayment = async () => {
-//     const stripe = await stripePromise;
-//     const res = await axiosInstance.post("/payments/create-checkout-session", {
-//       products: cart,
-//       couponCode: coupon ? coupon.code : null,
-//     });
 
-// 	  const session = res.data;
-// 	  console.log("Checkout session:", session);
-//     const result = await stripe.redirectToCheckout({
-//       sessionId: session.id,
-//     });
-
-//     if (result.error) {
-//       console.error("Error:", result.error);
-//     }
-//   };
 const handlePayment = async () => {
   try {
     const res = await axiosInstance.post("/payments/create-checkout-session", {
