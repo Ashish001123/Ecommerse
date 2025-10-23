@@ -1,0 +1,124 @@
+import { create } from "zustand";
+import axiosInstance from "../config/axios";
+import { toast } from "react-hot-toast";
+
+export const useCartStore = create((set, get) => ({
+  cart: [],
+  coupon: null,
+  total: 0,
+  subtotal: 0,
+  isCouponApplied: false,
+
+  getMyCoupon: async () => {
+    try {
+      const response = await axiosInstance.get("/coupons");
+      set({ coupon: response.data });
+    } catch (error) {
+      if (error?.response?.status === 404) {
+        set({ coupon: null });
+        return;
+      }
+      console.error("Error fetching coupon:", error);
+    }
+  },
+  applyCoupon: async (code) => {
+    try {
+      const response = await axiosInstance.post("/coupons/validate", { code });
+      set({ coupon: response.data, isCouponApplied: true });
+      get().calculateTotals();
+      toast.success("Coupon applied successfully");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to apply coupon");
+    }
+  },
+  removeCoupon: () => {
+    set({ coupon: null, isCouponApplied: false });
+    get().calculateTotals();
+    toast.success("Coupon removed");
+  },
+
+  getCartItems: async () => {
+    try {
+      const res = await axiosInstance.get("/cart");
+      set({ cart: res.data });
+      get().calculateTotals();
+    } catch (error) {
+      set({ cart: [] });
+      console.log("failed to fetch cart items", error);
+      toast.error("Failed to fetch cart items");
+    }
+  },
+
+  addToCart: async (product) => {
+    try {
+      await axiosInstance.post("/cart", { productId: product._id });
+      toast.success("Product added to cart", { id: "addToCart" });
+      set((prevState) => {
+        const existingItem = prevState.cart.find(
+          (item) => item._id === product._id
+        );
+        const newCart = existingItem
+          ? prevState.cart.map((item) =>
+              item._id === product._id
+                ? { ...item, quantity: item.quantity + 1 }
+                : item
+            )
+          : [...prevState.cart, { ...product, quantity: 1 }];
+        return { cart: newCart };
+      });
+      get().calculateTotals();
+    } catch (error) {
+      console.log("failed to add product to cart", error);
+      toast.error("Failed to add product to cart");
+    }
+  },
+  clearCart: async () => {
+    set({ cart: [], coupon: null, total: 0, subtotal: 0 });
+  },
+  calculateTotals: () => {
+    const { cart, coupon } = get();
+    const subtotal = cart.reduce(
+      (acc, item) => acc + item.price * item.quantity,
+      0
+    );
+    let total = subtotal;
+    if (coupon) {
+      total = total - (total * coupon.discount) / 100;
+    }
+    set({ subtotal, total });
+  },
+  deleteFromCart: async (productId) => {
+    try {
+      await axiosInstance.delete(`/cart/${productId}`);
+      set((prevState) => ({
+        cart: prevState.cart.filter((item) => item._id !== productId),
+      }));
+      get().calculateTotals();
+      toast.success("Product removed from cart");
+    } catch (error) {
+      console.log("failed to remove product from cart", error);
+      toast.error("Failed to remove product from cart");
+    }
+  },
+  removeFromCart: async (productId) => {
+    await axiosInstance.delete(`/cart/${productId}`);
+    set((prevState) => ({
+      cart: prevState.cart.filter((item) => item._id !== productId),
+    }));
+    get().calculateTotals();
+  },
+  updateQuantity: async (productId, quantity) => {
+    if (quantity === 0) {
+      get().removeFromCart(productId);
+      return;
+    }
+
+    await axiosInstance.put(`/cart/${productId}`, { quantity });
+    set((prevState) => ({
+      cart: prevState.cart.map((item) =>
+        item._id === productId ? { ...item, quantity } : item
+      ),
+    }));
+    get().calculateTotals();
+  },
+}));
