@@ -1,0 +1,36 @@
+# Backend Environment Variables
+# Copy this file to backend/.env and fill in your actual values
+
+# Database Configuration
+MONGODB_URI=mongodb://localhost:27017/ecommerce
+# For production, use MongoDB Atlas: mongodb+srv://username:password@cluster.mongodb.net/ecommerce
+
+# JWT Configuration
+JWT_SECRET=your_jwt_secret_key_here
+JWT_EXPIRES_IN=7d
+
+# Server Configuration
+PORT=5002
+NODE_ENV=development
+
+# Client URL (Frontend URL)
+CLIENT_URL=http://localhost:5173
+
+# Stripe Configuration
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
+STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key_here
+
+# Cloudinary Configuration
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+
+# Redis Configuration
+REDIS_URL=redis://localhost:6379
+# For production, use Redis Cloud: redis://username:password@host:port
+
+# Email Configuration (Optional)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_app_password

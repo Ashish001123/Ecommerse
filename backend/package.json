@@ -1,16 +1,22 @@
 {
-  "name": "backend",
+  "name": "ecommerce-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "E-commerce backend API with Node.js and Express",
   "main": "index.js",
   "scripts": {
-    "start": "PORT=5001 node index.js",
-    "dev": "PORT=5001 nodemon index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "build": "echo 'No build step required for Node.js'",
+    "test": "echo 'No tests specified'"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["ecommerce", "api", "nodejs", "express", "mongodb"],
+  "author": "Ashish",
+  "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.7.0",

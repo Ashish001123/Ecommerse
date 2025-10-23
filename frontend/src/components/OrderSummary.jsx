@@ -24,12 +24,8 @@ const handlePayment = async () => {
       products: cart,
       couponCode: coupon ? coupon.code : null,
     });
-
-    // The backend now returns `url` instead of sessionId
     const sessionUrl = res.data.url;
     console.log("Checkout session URL:", sessionUrl);
-
-    // Redirect the user
     window.location.href = sessionUrl;
   } catch (error) {
     console.error("Payment error:", error);
