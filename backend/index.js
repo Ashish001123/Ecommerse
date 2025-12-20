@@ -32,6 +32,7 @@ app.use("/api/coupons", couponRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/analytics", analyticsRoutes);
 
+
 app.listen(PORT, () => {
   connectDB();
   console.log(`Server is running on port http://localhost:${PORT}`);

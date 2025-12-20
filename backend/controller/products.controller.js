@@ -133,7 +133,6 @@ export const toggleFeaturedProducts = async (req, res) => {
     product.isFeatured = !product.isFeatured;
     await product.save();
 
-    // Invalidate featured products cache when featured status changes
     await redis.del("featured_products");
 
     return res.status(200).json({

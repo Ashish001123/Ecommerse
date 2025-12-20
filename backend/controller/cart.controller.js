@@ -26,19 +26,14 @@ export const addToCart = async (req, res) => {
     const { productId } = req.body;
     const user = req.user;
 
-    // Debug log to see what's in cartItems
     console.log("User cartItems:", JSON.stringify(user.cartItems, null, 2));
 
     if (!productId) {
       return res.status(400).json({ message: "productId is required" });
     }
-
-    // Ensure cartItems is an array and filter out invalid items
     if (!Array.isArray(user.cartItems)) {
       user.cartItems = [];
     }
-
-    // Clean up any invalid cart items
     user.cartItems = user.cartItems.filter((item) => item && item.productId);
 
     const existingItem = user.cartItems.find(

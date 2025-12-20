@@ -2,7 +2,7 @@ import { create } from "zustand";
 import axiosInstance from "../config/axios.js";
 import { toast } from "react-hot-toast";
 
-export const useAuthStore = create((set) => ({
+export const useAuthStore = create((set, get) => ({
   authUser: null,
   isAuthenticated: false,
   isCheckingAuth: true,
@@ -87,45 +87,45 @@ export const useAuthStore = create((set) => ({
     }
   },
 
-  // refreshToken: async () => {
-  //   // Prevent multiple simultaneous refresh attempts
-  //   if (get().isCheckingAuth) return;
+  refreshToken: async () => {
+    // Prevent multiple simultaneous refresh attempts
+    if (get().isCheckingAuth) return;
 
-  //   set({ isCheckingAuth: true });
-  //   try {
-  //     const response = await axiosInstance.post("/auth/refresh-token");
-  //     set({ isCheckingAuth: false });
-  //     return response.data;
-  //   } catch (error) {
-  //     set({ authUser: null, isCheckingAuth: false, isAuthenticated: false });
-  //     throw error;
-  //   }
-  // },
+    set({ isCheckingAuth: true });
+    try {
+      const response = await axiosInstance.post("/auth/refresh-token");
+      set({ isCheckingAuth: false });
+      return response.data;
+    } catch (error) {
+      set({ authUser: null, isCheckingAuth: false, isAuthenticated: false });
+      throw error;
+    }
+  },
 }));
 
-// let refreshPromise = null;
+let refreshPromise = null;
 
-// axiosInstance.interceptors.response.use(
-//   (response) => response,
-//   async (error) => {
-//     const originalRequest = error.config;
-//     if (error.response?.status === 401 && !originalRequest._retry) {
-//       originalRequest._retry = true;
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
 
-//       try {
-//         if (refreshPromise) {
-//           await refreshPromise;
-//           return axiosInstance(originalRequest);
-//         }
-//         refreshPromise = useAuthStore.getState().refreshToken();
-//         await refreshPromise;
-//         refreshPromise = null;
-//         return axiosInstance(originalRequest);
-//       } catch (refreshError) {
-//         useAuthStore.getState().logout();
-//         return Promise.reject(refreshError);
-//       }
-//     }
-//     return Promise.reject(error);
-//   }
-// );
+      try {
+        if (refreshPromise) {
+          await refreshPromise;
+          return axiosInstance(originalRequest);
+        }
+        refreshPromise = useAuthStore.getState().refreshToken();
+        await refreshPromise;
+        refreshPromise = null;
+        return axiosInstance(originalRequest);
+      } catch (refreshError) {
+        useAuthStore.getState().logout();
+        return Promise.reject(refreshError);
+      }
+    }
+    return Promise.reject(error);
+  }
+);

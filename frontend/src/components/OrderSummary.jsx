@@ -5,10 +5,6 @@ import { MoveRight } from "lucide-react";
 import { loadStripe } from "@stripe/stripe-js";
 import axiosInstance from "../config/axios.js";
 
-
-
-
-
 const OrderSummary = () => {
   const { total, subtotal, coupon, isCouponApplied, cart } = useCartStore();
 
@@ -17,21 +13,22 @@ const OrderSummary = () => {
   const formattedTotal = total.toFixed(2);
   const formattedSavings = savings.toFixed(2);
 
-
-const handlePayment = async () => {
-  try {
-    const res = await axiosInstance.post("/payments/create-checkout-session", {
-      products: cart,
-      couponCode: coupon ? coupon.code : null,
-    });
-    const sessionUrl = res.data.url;
-    console.log("Checkout session URL:", sessionUrl);
-    window.location.href = sessionUrl;
-  } catch (error) {
-    console.error("Payment error:", error);
-  }
-};
-
+  const handlePayment = async () => {
+    try {
+      const res = await axiosInstance.post(
+        "/payments/create-checkout-session",
+        {
+          products: cart,
+          couponCode: coupon ? coupon.code : null,
+        }
+      );
+      const sessionUrl = res.data.url;
+      console.log("Checkout session URL:", sessionUrl);
+      window.location.href = sessionUrl;
+    } catch (error) {
+      console.error("Payment error:", error);
+    }
+  };
 
   return (
     <motion.div

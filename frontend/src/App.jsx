@@ -51,14 +51,33 @@ function App() {
             path="/login"
             element={!authUser ? <LoginPage /> : <HomePage />}
           />
-          <Route path="/secret-dashboard" element={authUser?.role === "admin" ? <AdminPage /> : <Navigate to="/login" />} />
-          <Route path="/category/:category/" element={<CategoryPage />} />
-          <Route path="/cart" element={authUser ? <CartPage /> : <Navigate to="/login" />} />
           <Route
-						path='/purchase_success'
-						element={authUser ? <PurchaseSuccessPage /> : <Navigate to='/login' />}
-					/>
-          <Route path='/purchase_cancel' element={authUser ? <PurchaseCancelPage /> : <Navigate to='/login' />} />
+            path="/secret-dashboard"
+            element={
+              authUser?.role === "admin" ? (
+                <AdminPage />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route path="/category/:category/" element={<CategoryPage />} />
+          <Route
+            path="/cart"
+            element={authUser ? <CartPage /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/purchase_success"
+            element={
+              authUser ? <PurchaseSuccessPage /> : <Navigate to="/login" />
+            }
+          />
+          <Route
+            path="/purchase_cancel"
+            element={
+              authUser ? <PurchaseCancelPage /> : <Navigate to="/login" />
+            }
+          />
         </Routes>
       </div>
     </div>

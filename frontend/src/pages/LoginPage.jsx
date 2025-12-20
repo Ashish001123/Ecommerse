@@ -15,7 +15,6 @@ const LoginPage = () => {
     console.log(email, password);
     login(email, password);
   };
-
   return (
     <div className="flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <motion.div
@@ -28,7 +27,6 @@ const LoginPage = () => {
           Login your account
         </h2>
       </motion.div>
-
       <motion.div
         className="mt-8 sm:mx-auto sm:w-full sm:max-w-md"
         initial={{ opacity: 0, y: 20 }}

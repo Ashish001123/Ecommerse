@@ -82,8 +82,6 @@ export const useProductStore = create((set) => ({
         ),
         loading: false,
       }));
-
-      // Rebuild featured products cache by calling the featured endpoint
       try {
         await axiosInstance.get("/products/featured");
         console.log("Featured products cache rebuilt");
