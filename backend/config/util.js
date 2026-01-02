@@ -79,6 +79,7 @@ export const storeRefreshToken = async (userId, refreshToken) => {
   }
 
   try {
+    if (!redis) return;
     await redis.set(
       `refresh_token:${userId}`,
       refreshToken,
