@@ -5,7 +5,7 @@ export const getCartProducts = async (req, res) => {
     const products = await Product.find({
       _id: { $in: req.user.cartItems.map((item) => item.productId) },
     });
-    const cartItems = products.map((product) => {
+      const cartItems = products.map((product) => {
       const item = req.user.cartItems.find(
         (cartItems) => cartItems.productId.toString() === product._id.toString()
       );
@@ -26,7 +26,7 @@ export const addToCart = async (req, res) => {
     const { productId } = req.body;
     const user = req.user;
 
-    console.log("User cartItems:", JSON.stringify(user.cartItems, null, 2));
+    // console.log("User cartItems:", JSON.stringify(user.cartItems, null, 2));
 
     if (!productId) {
       return res.status(400).json({ message: "productId is required" });

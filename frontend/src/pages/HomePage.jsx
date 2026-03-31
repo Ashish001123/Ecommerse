@@ -41,8 +41,7 @@ const HomePage = () => {
 
         {!loading && products.length > 0 && (
           <FeaturedProducts featuredProducts={products} />
-			  )}
-
+        )}
 			  
       </div>
     </div>

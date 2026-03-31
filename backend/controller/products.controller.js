@@ -55,7 +55,6 @@ export const createProduct = async (req, res) => {
     if (!imageUrl) {
       return res.status(400).json({ message: "Product image is required" });
     }
-
     const products = new Product({
       name,
       description,
