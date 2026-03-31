@@ -1,7 +1,7 @@
 import express from "express";
 import {
   addToCart,
-  removeAllFromCart,
+  removeFromCart, 
   updateQuantity,
   getCartProducts,
 } from "../controller/cart.controller.js";
@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.get("/", protectRoute, getCartProducts);
 router.post("/", protectRoute, addToCart);
-router.delete("/:id", protectRoute, removeAllFromCart);
+router.delete("/:id", protectRoute, removeFromCart );
 router.put("/:id", protectRoute, updateQuantity);
 
 export default router;

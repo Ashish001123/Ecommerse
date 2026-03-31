@@ -3,6 +3,14 @@ import { generateToken, storeRefreshToken, setCookie } from "../config/util.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import redis from "../config/redis.js";
+import mongoose from "mongoose";
+
+const isDbUnavailableError = (error) =>
+  mongoose.connection.readyState !== 1 ||
+  error?.name === "MongooseServerSelectionError" ||
+  error?.name === "MongoNetworkError" ||
+  error?.name === "MongooseError";
+
 export const signUpRoute = async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -45,6 +53,11 @@ export const signUpRoute = async (req, res) => {
     });
   } catch (error) {
     console.error("Signup error:", error);
+    if (isDbUnavailableError(error)) {
+      return res
+        .status(503)
+        .json({ message: "Database unavailable. Please try again shortly." });
+    }
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -80,6 +93,11 @@ export const loginRoute = async (req, res) => {
     });
   } catch (error) {
     console.error("Login error:", error);
+    if (isDbUnavailableError(error)) {
+      return res
+        .status(503)
+        .json({ message: "Database unavailable. Please try again shortly." });
+    }
     res.status(500).json({ message: "Internal server error" });
   }
 };

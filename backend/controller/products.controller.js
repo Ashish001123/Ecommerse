@@ -44,28 +44,30 @@ export const getFeaturedProducts = async (req, res) => {
 export const createProduct = async (req, res) => {
   try {
     const { name, description, price, image, category } = req.body;
-    let cloudinaryResponse = null;
-    if (image) {
-      cloudinaryResponse = await cloudinary.uploader.upload(image, {
-        folder: "products",
-      });
-    }
-    const imageUrl = cloudinaryResponse ? cloudinaryResponse.secure_url : "";
 
-    if (!imageUrl) {
+    if (!image) {
       return res.status(400).json({ message: "Product image is required" });
     }
-    const products = new Product({
+    const upload = await cloudinary.uploader.upload(image, {
+      folder: "products",
+    });
+    const imageUrl = upload.secure_url;
+
+    const product = new Product({
       name,
       description,
-      price,
+      price: parseFloat(price),
       imageUrl,
       category,
     });
-    await products.save();
+    await product.save();
+    if (redis) {
+      await redis.del("featured_products");
+    }
+
     return res
       .status(201)
-      .json({ message: "Product created successfully", products });
+      .json({ message: "Product created successfully", product });
   } catch (error) {
     console.error("Error creating product:", error);
     return res
@@ -120,65 +122,6 @@ export const getProductsByCategory = async (req, res) => {
   }
 };
 
-// export const toggleFeaturedProducts = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const product = await Product.findById(id);
-//     if (!product) {
-//       return res.status(404).json({ message: "Product not found" });
-//     }
-
-//     const wasFeatured = product.isFeatured;
-//     product.isFeatured = !product.isFeatured;
-//     await product.save();
-
-//     await redis.del("featured_products");
-
-//     return res.status(200).json({
-//       message: `Product ${
-//         wasFeatured ? "removed from" : "added to"
-//       } featured products`,
-//       product,
-//     });
-//   } catch (error) {
-//     return res
-//       .status(500)
-//       .json({ message: "Server error", error: error.message });
-//   }
-// };
-
-
-// export const toggleFeaturedProducts = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-
-//     const product = await Product.findById(id);
-//     if (!product) {
-//       return res.status(404).json({ message: "Product not found" });
-//     }
-
-//     const wasFeatured = product.isFeatured;
-//     product.isFeatured = !product.isFeatured;
-//     await product.save();
-
-//     // ✅ Redis-safe
-//     if (redis) {
-//       await redis.del("featured_products");
-//     }
-
-//     return res.status(200).json({
-//       message: `Product ${
-//         wasFeatured ? "removed from" : "added to"
-//       } featured products`,
-//       product,
-//     });
-//   } catch (error) {
-//     console.error("Toggle featured error:", error);
-//     return res.status(500).json({
-//       message: "Failed to toggle featured product",
-//     });
-//   }
-// };
 
 
 
@@ -205,4 +148,4 @@ export const toggleFeaturedProducts = async (req, res) => {
       message: "Failed to toggle featured product",
     });
   }
-};
+}

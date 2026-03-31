@@ -9,13 +9,14 @@ import cartRoutes from "./routes/cart.route.js";
 import couponRoutes from "./routes/coupons.route.js";
 import paymentRoutes from "./routes/payment.route.js";
 import analyticsRoutes from "./routes/analytics.route.js";
+import mongoose from "mongoose";
 const app = express();
 dotenv.config();
 
 const PORT = process.env.PORT || 5002;
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: ["http://localhost:5173", "http://localhost:5174"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -24,6 +25,14 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(cookieParser());
+
+app.get("/api/health", (req, res) => {
+  const isDbConnected = mongoose.connection.readyState === 1;
+  return res.status(isDbConnected ? 200 : 503).json({
+    status: isDbConnected ? "ok" : "degraded",
+    database: isDbConnected ? "connected" : "disconnected",
+  });
+});
 
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productsRoutes);
