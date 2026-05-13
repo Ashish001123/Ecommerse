@@ -141,11 +141,11 @@ export const toggleFeaturedProducts = async (req, res) => {
       await redis.del("featured_products");
     }
 
-    return res.status(200).json(product);
+    return res.status(200).json({ product });
   } catch (error) {
     console.error("Toggle featured error:", error);
     return res.status(500).json({
       message: "Failed to toggle featured product",
     });
   }
-}
+};

@@ -106,6 +106,16 @@ export const checkoutSuccess = async (req, res) => {
     const userId = session.metadata.userId;
     const couponCode = session.metadata.couponCode;
 
+    const existingOrder = await Order.findOne({ stripeSessionId: session.id });
+    if (existingOrder) {
+      await User.findByIdAndUpdate(userId, { cartItems: [] });
+      return res.status(200).json({
+        success: true,
+        message: "Order already processed",
+        orderId: existingOrder._id,
+      });
+    }
+
     if (couponCode) {
       await Coupon.findOneAndUpdate(
         { code: couponCode, userId },
@@ -118,12 +128,13 @@ export const checkoutSuccess = async (req, res) => {
       return res.status(400).json({ message: "Cart is empty" });
     }
 
-    // Create order products with price information
-    const orderProducts = user.cartItems.map((item) => ({
-      productId: item.productId._id,
-      quantity: item.quantity,
-      price: item.productId.price,
-    }));
+    const orderProducts = user.cartItems
+      .filter((item) => item.productId)
+      .map((item) => ({
+        productId: item.productId._id,
+        quantity: item.quantity,
+        price: item.productId.price,
+      }));
 
     const order = new Order({
       user: userId,
@@ -134,9 +145,7 @@ export const checkoutSuccess = async (req, res) => {
 
     await order.save();
 
-    // Clear user's cart
-    user.cartItems = [];
-    await user.save();
+    await User.findByIdAndUpdate(userId, { cartItems: [] });
 
     return res.status(200).json({
       success: true,

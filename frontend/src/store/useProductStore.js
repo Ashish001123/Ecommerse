@@ -24,7 +24,7 @@ export const useProductStore = create((set) => ({
     try {
       const res = await axiosInstance.post("/products", productData);
       set((state) => ({
-        products: [...state.products, res.data],
+        products: [...state.products, res.data.product],
         loading: false,
       }));
       toast.success("Product created successfully");
